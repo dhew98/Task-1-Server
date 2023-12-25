@@ -40,19 +40,24 @@ async function run() {
     
     app.post('/support/create_ticket', async (req, res) =>{
         const { userID, date, deviceID, queryText } = req.body;
-        const lastTicket = await supportCollection.findOne(
-            { userID },
-            { sort: { date: -1 } }
-          );
-          if (lastTicket && lastTicket.date > Date.now() - 30 * 60 * 1000) {
-            res.status(409).json({
-              message: 'You have already placed a support ticket. Please wait at least one hour before sending another request',
-            });
-           
-          } else {
+        const cursor=supportCollection.find({});
+        const user=await cursor.toArray();
+        const lastTicket=user[user.length-1];
+        // console.log(lastTicket)
+        //   console.log(lastTicket.date);
+        //   console.log(new Date());
+        //   console.log(new Date(lastTicket.date).getTime());
+          let time = new Date().getTime() - new Date(lastTicket.date).getTime();
+          console.log(time);
+          if (!lastTicket ||  time > 30 * 60 * 1000) {
             const result = await supportCollection.insertOne({ userID, date, deviceID, queryText });
             
             res.status(200).json({ data: { _id: result.insertedId.toString() } });
+          
+          } else {
+            res.status(409).json({
+              message: 'You have already placed a support ticket. Please wait at least one hour before sending another request',
+            });
           }
           
     })
