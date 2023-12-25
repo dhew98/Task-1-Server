@@ -45,14 +45,14 @@ async function run() {
             { sort: { date: -1 } }
           );
           if (lastTicket && lastTicket.date > Date.now() - 30 * 60 * 1000) {
-            const result = await supportCollection.insertOne({ userID, date, deviceID, queryText });
-            
-            res.status(200).json({ data: { _id: result.insertedId.toString() } });
-          
-          } else {
             res.status(409).json({
               message: 'You have already placed a support ticket. Please wait at least one hour before sending another request',
             });
+           
+          } else {
+            const result = await supportCollection.insertOne({ userID, date, deviceID, queryText });
+            
+            res.status(200).json({ data: { _id: result.insertedId.toString() } });
           }
           
     })
