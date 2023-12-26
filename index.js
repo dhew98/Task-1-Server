@@ -48,7 +48,7 @@ async function run() {
         //   console.log(new Date());
         //   console.log(new Date(lastTicket.date).getTime());
           let time = new Date().getTime() - new Date(lastTicket.date).getTime();
-          console.log(time);
+          //console.log(time);
           if (!lastTicket ||  time > 30 * 60 * 1000) {
             const result = await supportCollection.insertOne({ userID, date, deviceID, queryText });
             
